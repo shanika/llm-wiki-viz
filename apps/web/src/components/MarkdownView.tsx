@@ -34,12 +34,17 @@ export function MarkdownView({ doc }: Props) {
   const processed = useMemo(() => preprocessWikiLinks(doc), [doc]);
 
   return (
-    <article className="prose-md max-w-3xl mx-auto px-8 py-6">
-      <h1 className="!mt-0 !mb-6 text-3xl font-bold">{doc.title}</h1>
+    <article className="prose-md max-w-3xl mx-auto px-8 py-8">
+      <h1 className="!mt-0 !mb-6 text-4xl font-bold tracking-tight">
+        {doc.title}
+      </h1>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
+          // The doc title is rendered above; drop any body h1 so it doesn't
+          // appear twice (e.g. frontmatter `title: Alpha` + body `# Alpha`).
+          h1: () => null,
           a: ({ href, children, ...rest }) => {
             if (href?.startsWith("kg://file/")) {
               const target = decodeURI(href.slice("kg://".length));

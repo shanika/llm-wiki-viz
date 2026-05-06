@@ -17,15 +17,15 @@ export default function App() {
 
   return (
     <div className="h-full flex">
-      <aside className="w-64 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-panel)] flex flex-col">
-        <header className="px-3 py-3 border-b border-[var(--color-border)] flex items-center justify-between">
-          <Link to="/" className="text-sm font-semibold tracking-wide">
+      <aside className="w-72 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-panel)] flex flex-col">
+        <header className="px-4 py-4 border-b border-[var(--color-border)] flex items-center justify-between gap-2">
+          <Link to="/" className="text-[15px] font-semibold tracking-wide">
             Knowledge Graph
           </Link>
           <NavLink
             to="/graph"
             className={({ isActive }) =>
-              "text-xs px-2 py-1 rounded border border-[var(--color-border)] " +
+              "text-[13px] px-2.5 py-1 rounded border border-[var(--color-border)] " +
               (isActive
                 ? "bg-[var(--color-accent-soft)] text-white"
                 : "text-[var(--color-muted)] hover:text-[var(--color-fg)]")
@@ -54,10 +54,12 @@ export default function App() {
 function Welcome() {
   return (
     <div className="p-10 text-[var(--color-muted)]">
-      <h1 className="text-2xl text-[var(--color-fg)] font-semibold mb-2">
+      <h1 className="text-3xl text-[var(--color-fg)] font-semibold mb-3">
         Welcome
       </h1>
-      <p>Pick a file from the sidebar, or open the graph view.</p>
+      <p className="text-[17px] leading-relaxed">
+        Pick a file from the sidebar, or open the graph view.
+      </p>
     </div>
   );
 }
@@ -75,16 +77,19 @@ function FileRoute() {
     api.file(path).then(setDoc).catch((e) => setError(String(e)));
   }, [path]);
 
-  if (error) return <div className="p-10 text-red-400 text-sm">{error}</div>;
-  if (!doc) return <div className="p-10 text-[var(--color-muted)]">Loading…</div>;
+  if (error) return <div className="p-10 text-red-400">{error}</div>;
+  if (!doc)
+    return (
+      <div className="p-10 text-[var(--color-muted)]">Loading…</div>
+    );
 
   return (
     <div className="h-full flex">
       <section className="flex-1 min-w-0 overflow-y-auto">
         <MarkdownView doc={doc} />
       </section>
-      <aside className="w-72 shrink-0 border-l border-[var(--color-border)] bg-[var(--color-panel)] overflow-y-auto p-3">
-        <h2 className="text-xs uppercase tracking-wider text-[var(--color-muted)] mb-3">
+      <aside className="w-80 shrink-0 border-l border-[var(--color-border)] bg-[var(--color-panel)] overflow-y-auto p-4">
+        <h2 className="text-[13px] uppercase tracking-[0.12em] font-semibold text-[var(--color-muted)] mb-4">
           Backlinks ({doc.backlinks.length})
         </h2>
         <Backlinks items={doc.backlinks} />

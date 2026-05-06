@@ -8,7 +8,9 @@ interface Props {
 export function Backlinks({ items }: Props) {
   if (items.length === 0) {
     return (
-      <div className="text-[var(--color-muted)] text-sm">No backlinks yet.</div>
+      <div className="text-[var(--color-muted)] text-[15px]">
+        No backlinks yet.
+      </div>
     );
   }
   return (
@@ -16,15 +18,17 @@ export function Backlinks({ items }: Props) {
       {items.map((b) => (
         <li
           key={b.source}
-          className="rounded border border-[var(--color-border)] p-2 bg-[var(--color-panel-2)]"
+          className="rounded border border-[var(--color-border)] p-3 bg-[var(--color-panel-2)]"
         >
           <Link
             to={`/file/${b.source}`}
-            className="text-[var(--color-accent)] text-sm font-medium hover:underline"
+            className="text-[var(--color-accent)] text-[15px] font-medium hover:underline"
           >
             {b.source.replace(/\.md$/, "")}
           </Link>
-          <p className="text-xs text-[var(--color-muted)] mt-1">{b.snippet}</p>
+          <p className="text-[13.5px] text-[var(--color-muted)] mt-1.5 leading-relaxed">
+            {b.snippet}
+          </p>
         </li>
       ))}
     </ul>

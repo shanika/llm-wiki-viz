@@ -8,7 +8,7 @@ interface Props {
 
 export function FileTree({ tree }: Props) {
   return (
-    <ul className="text-sm">
+    <ul className="text-[15px]">
       {tree.children?.map((child) => (
         <TreeNode key={child.path} node={child} depth={0} />
       ))}
