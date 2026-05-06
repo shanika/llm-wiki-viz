@@ -86,3 +86,19 @@ body {
   border: 1px solid var(--color-border);
   @apply px-2 py-1;
 }
+
+/* Mermaid diagrams — keep large diagrams from blowing up the document column,
+ * and let the SVG sit on the panel surface so it reads like the rest of the
+ * doc. The fullscreen surface ignores both. */
+.mermaid-frame .mermaid-svg {
+  max-height: 480px;
+}
+.mermaid-frame svg {
+  max-width: 100%;
+  height: auto;
+}
+.mermaid-fullscreen-svg svg {
+  max-width: min(90vw, 1400px);
+  max-height: 80vh;
+  display: block;
+}

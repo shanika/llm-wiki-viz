@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { Link } from "react-router-dom";
 import type { MarkdownDoc } from "@llm-wiki-viz/shared";
+import { MermaidDiagram } from "./MermaidDiagram";
 
 interface Props {
   doc: MarkdownDoc;
@@ -45,6 +46,35 @@ export function MarkdownView({ doc }: Props) {
           // The doc title is rendered above; drop any body h1 so it doesn't
           // appear twice (e.g. frontmatter `title: Alpha` + body `# Alpha`).
           h1: () => null,
+          code: ({ className, children, ...rest }) => {
+            const lang = /language-(\w+)/.exec(className ?? "")?.[1];
+            if (lang === "mermaid") {
+              return <MermaidDiagram code={String(children).replace(/\n$/, "")} />;
+            }
+            return (
+              <code className={className} {...rest}>
+                {children}
+              </code>
+            );
+          },
+          // Drop the surrounding <pre> for mermaid blocks so the diagram lives
+          // at the article level, not inside a scrollable code-block frame.
+          pre: ({ children, ...rest }) => {
+            const child = Array.isArray(children) ? children[0] : children;
+            if (
+              child &&
+              typeof child === "object" &&
+              "props" in child &&
+              typeof (child as { props: { className?: string } }).props
+                .className === "string" &&
+              /language-mermaid/.test(
+                (child as { props: { className?: string } }).props.className ?? ""
+              )
+            ) {
+              return <>{children}</>;
+            }
+            return <pre {...rest}>{children}</pre>;
+          },
           a: ({ href, children, ...rest }) => {
             if (href?.startsWith("kg://file/")) {
               const target = decodeURI(href.slice("kg://".length));
