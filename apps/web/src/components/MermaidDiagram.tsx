@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 // One init per page-load: avoid re-initializing mermaid for each diagram.
@@ -117,10 +117,12 @@ interface FullscreenProps {
   onClose: () => void;
 }
 
-const MIN_SCALE = 0.25;
-const MAX_SCALE = 4;
+const MIN_SCALE = 0.1;
+const MAX_SCALE = 8;
 const PAN_STEP = 40;
 const ZOOM_FACTOR = 1.15;
+const FULLSCREEN_TOP_OFFSET = 56; // toolbar height in px
+const FIT_PADDING = 48; // breathing room around the diagram on initial fit
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
@@ -128,9 +130,37 @@ function clamp(v: number, lo: number, hi: number): number {
 
 function MermaidFullscreen({ svg, onClose }: FullscreenProps) {
   const [scale, setScale] = useState(1);
+  const [fitScale, setFitScale] = useState(1);
   const [tx, setTx] = useState(0);
   const [ty, setTy] = useState(0);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const svgWrapRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
+
+  // After the SVG is in the DOM, measure it against the viewport and pick a
+  // starting scale that fills the available area (capped, so a tiny diagram
+  // doesn't get blown up to absurd dimensions). This is what the user means
+  // by "should be larger than 100% on open" — the SVG's intrinsic size is
+  // often only a few hundred pixels wide.
+  useLayoutEffect(() => {
+    const wrap = svgWrapRef.current;
+    const surface = surfaceRef.current;
+    if (!wrap || !surface) return;
+    const svgEl = wrap.querySelector("svg");
+    if (!svgEl) return;
+
+    const svgRect = svgEl.getBoundingClientRect();
+    const availW = surface.clientWidth - FIT_PADDING * 2;
+    const availH = surface.clientHeight - FIT_PADDING * 2;
+    if (svgRect.width === 0 || svgRect.height === 0) return;
+
+    const fit = Math.min(availW / svgRect.width, availH / svgRect.height);
+    // Allow the auto-fit to upscale (so small diagrams aren't tiny) but cap
+    // it well below MAX_SCALE so there's still headroom for the user to zoom.
+    const initial = clamp(fit, 1, 4);
+    setFitScale(initial);
+    setScale(initial);
+  }, [svg]);
 
   // Lock body scroll while open.
   useEffect(() => {
@@ -157,7 +187,7 @@ function MermaidFullscreen({ svg, onClose }: FullscreenProps) {
           setScale((s) => clamp(s / ZOOM_FACTOR, MIN_SCALE, MAX_SCALE));
           break;
         case "0":
-          setScale(1);
+          setScale(fitScale);
           setTx(0);
           setTy(0);
           break;
@@ -177,7 +207,7 @@ function MermaidFullscreen({ svg, onClose }: FullscreenProps) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, fitScale]);
 
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -198,7 +228,7 @@ function MermaidFullscreen({ svg, onClose }: FullscreenProps) {
   };
 
   const reset = () => {
-    setScale(1);
+    setScale(fitScale);
     setTx(0);
     setTy(0);
   };
@@ -270,9 +300,11 @@ function MermaidFullscreen({ svg, onClose }: FullscreenProps) {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
+        ref={surfaceRef}
         style={{ cursor: dragRef.current ? "grabbing" : "grab" }}
       >
         <div
+          ref={svgWrapRef}
           className="mermaid-fullscreen-svg"
           style={{
             transform: `translate(${tx}px, ${ty}px) scale(${scale})`,

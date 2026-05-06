@@ -97,8 +97,10 @@ body {
   max-width: 100%;
   height: auto;
 }
+.mermaid-fullscreen-svg {
+  display: inline-block;
+}
 .mermaid-fullscreen-svg svg {
-  max-width: min(90vw, 1400px);
-  max-height: 80vh;
   display: block;
+  /* No max size: the wrapper's transform: scale() handles fit. */
 }
