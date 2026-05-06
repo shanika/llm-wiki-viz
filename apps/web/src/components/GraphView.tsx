@@ -45,13 +45,13 @@ export function GraphView({ data }: Props) {
         width={size.width}
         height={size.height}
         graphData={graph}
-        backgroundColor="#1e1e26"
+        backgroundColor="#0a0e1a"
         nodeLabel={(n) => (n as FGNode).label}
-        nodeColor={(n) => ((n as FGNode).broken ? "#666673" : "#a78bfa")}
-        linkColor={() => "#3a3a46"}
+        nodeColor={(n) => ((n as FGNode).broken ? "#3f4866" : "#7dd3fc")}
+        linkColor={() => "#1f2638"}
         linkDirectionalParticles={1}
         linkDirectionalParticleWidth={1.5}
-        linkDirectionalParticleColor={() => "#a78bfa"}
+        linkDirectionalParticleColor={() => "#7dd3fc"}
         nodeCanvasObjectMode={() => "after"}
         nodeCanvasObject={(node, ctx, globalScale) => {
           const n = node as FGNode & { x?: number; y?: number };
@@ -60,7 +60,7 @@ export function GraphView({ data }: Props) {
           ctx.font = `${fontSize}px ui-sans-serif, system-ui, sans-serif`;
           ctx.textAlign = "center";
           ctx.textBaseline = "top";
-          ctx.fillStyle = "#e6e6ea";
+          ctx.fillStyle = "#e5e9f0";
           ctx.fillText(n.label, n.x, n.y + 6);
         }}
         onNodeClick={(node) => {

@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #1e1e26;
-  --color-panel: #25252e;
-  --color-panel-2: #2c2c38;
-  --color-border: #3a3a46;
-  --color-fg: #e6e6ea;
-  --color-muted: #9999a3;
-  --color-accent: #a78bfa;
-  --color-accent-soft: #5b3fb3;
+  --color-bg: #0a0e1a;
+  --color-panel: #0f1320;
+  --color-panel-2: #161c2c;
+  --color-border: #1f2638;
+  --color-fg: #e5e9f0;
+  --color-muted: #6b7896;
+  --color-accent: #7dd3fc;
+  --color-accent-soft: #1e3a52;
 }
 
 html,
@@ -53,7 +53,8 @@ body {
   @apply my-1;
 }
 .prose-md code {
-  background-color: var(--color-panel-2);
+  background-color: rgba(125, 211, 252, 0.08);
+  color: var(--color-accent);
   @apply px-1.5 py-0.5 rounded text-[0.92em];
 }
 .prose-md pre {
